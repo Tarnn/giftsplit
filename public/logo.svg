@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Box Base -->
+  <path d="M4 12H28V26C28 27.1046 27.1046 28 26 28H6C4.89543 28 4 27.1046 4 26V12Z" fill="#007BFF" stroke="#007BFF" strokeWidth="2" strokeLinejoin="round"/>
+  <!-- Box Top -->
+  <path d="M2 8C2 6.89543 2.89543 6 4 6H28C29.1046 6 30 6.89543 30 8V12H2V8Z" fill="#007BFF" stroke="#007BFF" strokeWidth="2" strokeLinejoin="round"/>
+  <!-- Split Line -->
+  <path d="M16 6V28" stroke="white" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
+  <!-- Ribbon -->
+  <path d="M16 3C16 3 13 3 13 6H19C19 3 16 3 16 3Z" fill="#FF6F61" stroke="#FF6F61" strokeWidth="2" strokeLinejoin="round"/>
+  <!-- Connection Lines -->
+  <g opacity="0.6">
+    <circle cx="8" cy="18" r="1" fill="#A0AEC0"/>
+    <circle cx="24" cy="18" r="1" fill="#A0AEC0"/>
+    <circle cx="16" cy="22" r="1" fill="#A0AEC0"/>
+    <line x1="8.5" y1="18" x2="15.5" y2="22" stroke="#A0AEC0" strokeWidth="0.5"/>
+    <line x1="23.5" y1="18" x2="16.5" y2="22" stroke="#A0AEC0" strokeWidth="0.5"/>
+  </g>
+</svg> 
