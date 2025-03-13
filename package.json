@@ -24,6 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^10.18.0",
+    "giftsplit-frontend": "file:",
     "jspdf": "^2.5.1",
     "lucide-react": "^0.309.0",
     "next": "14.0.4",

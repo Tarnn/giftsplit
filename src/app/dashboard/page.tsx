@@ -19,6 +19,7 @@ import {
   Plus,
   Search
 } from 'lucide-react'
+import PageLayout from '@/components/layout/PageLayout'
 
 interface GiftSummary {
   id: string
@@ -71,6 +72,32 @@ export default function DashboardPage() {
       gift.description.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
+  // Mock activity data
+  const activities = [
+    {
+      id: 1,
+      title: 'Birthday Gift Collection',
+      contributions: 2,
+      amount: 150,
+    },
+    {
+      id: 2,
+      title: 'Anniversary Present',
+      contributions: 3,
+      amount: 150,
+    },
+    {
+      id: 3,
+      title: 'Wedding Gift Pool',
+      contributions: 1,
+      amount: 150,
+    },
+  ]
+
+  const filteredActivities = activities.filter(activity =>
+    activity.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   if (!user) {
     return (
       <Layout>
@@ -85,157 +112,100 @@ export default function DashboardPage() {
   }
 
   return (
-    <Layout>
-      <Header />
-      <main className="container py-8">
+    <PageLayout>
+      <div className="space-y-6 max-w-6xl mx-auto">
+        {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto max-w-4xl"
+          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5"
         >
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Gift Dashboard</h1>
-              <p className="text-gray-600">Manage all your gifts in one place</p>
-            </div>
-            <Button onClick={() => window.location.href = '/create'}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create New Gift
-            </Button>
+          <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="bg-[#0c1442] rounded-2xl p-6"
+            >
+              <h3 className="text-white/70 text-lg font-medium mb-3">Active Gifts</h3>
+              <p className="text-4xl font-bold text-white">2</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="bg-[#0c1442] rounded-2xl p-6"
+            >
+              <h3 className="text-white/70 text-lg font-medium mb-3">Total Collected</h3>
+              <p className="text-4xl font-bold text-white">$300</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="bg-[#0c1442] rounded-2xl p-6"
+            >
+              <h3 className="text-white/70 text-lg font-medium mb-3">Contributors</h3>
+              <p className="text-4xl font-bold text-white">8</p>
+            </motion.div>
           </div>
-
-          <div className="mb-8 grid gap-6 sm:grid-cols-3">
-            <Card>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Gift className="h-4 w-4" />
-                  Total Gifts
-                </div>
-                <p className="mt-2 text-3xl font-bold">{gifts.length}</p>
-              </div>
-            </Card>
-            <Card>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users className="h-4 w-4" />
-                  Active Contributors
-                </div>
-                <p className="mt-2 text-3xl font-bold">
-                  {gifts.reduce((sum, gift) => sum + gift.contributors, 0)}
-                </p>
-              </div>
-            </Card>
-            <Card>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <DollarSign className="h-4 w-4" />
-                  Total Amount
-                </div>
-                <p className="mt-2 text-3xl font-bold">
-                  ${gifts.reduce((sum, gift) => sum + gift.totalAmount, 0)}
-                </p>
-              </div>
-            </Card>
-          </div>
-
-          <Card>
-            <div className="border-b p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search gifts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 rounded-md border pl-10 pr-4 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant={filter === 'all' ? 'primary' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilter('all')}
-                  >
-                    All Gifts
-                  </Button>
-                  <Button
-                    variant={filter === 'organizing' ? 'primary' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilter('organizing')}
-                  >
-                    Organizing
-                  </Button>
-                  <Button
-                    variant={filter === 'contributing' ? 'primary' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilter('contributing')}
-                  >
-                    Contributing
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="divide-y">
-              {filteredGifts.map((gift) => (
-                <motion.div
-                  key={gift.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between p-6"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{gift.description}</span>
-                      <Badge variant={gift.status === 'completed' ? 'success' : 'outline'}>
-                        {gift.status === 'completed' ? 'Completed' : 'Active'}
-                      </Badge>
-                      <Badge variant="outline">
-                        {gift.role === 'organizer' ? 'Organizer' : 'Contributor'}
-                      </Badge>
-                    </div>
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Progress</span>
-                        <span className="font-medium">
-                          ${gift.collectedAmount} of ${gift.totalAmount} collected
-                        </span>
-                      </div>
-                      <Progress
-                        value={(gift.collectedAmount / gift.totalAmount) * 100}
-                        className="mt-2"
-                      />
-                      <div className="mt-1 flex items-center justify-between text-sm">
-                        <span className="text-gray-600">
-                          {gift.contributors} contributors
-                        </span>
-                        <span className="font-medium">
-                          {Math.round((gift.collectedAmount / gift.totalAmount) * 100)}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-4"
-                    onClick={() => window.location.href = `/gift/${gift.id}`}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              ))}
-
-              {filteredGifts.length === 0 && (
-                <div className="p-6 text-center text-gray-600">
-                  No gifts found matching your search criteria.
-                </div>
-              )}
-            </div>
-          </Card>
         </motion.div>
-      </main>
-    </Layout>
+
+        {/* Recent Activity Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5"
+        >
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-white">Recent Activity</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <input
+                type="text"
+                placeholder="Search activities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-[#0c1442] text-white pl-10 pr-4 py-2 rounded-xl border border-white/5 focus:outline-none focus:border-white/20 placeholder:text-white/40"
+              />
+            </div>
+          </div>
+          <div className="space-y-4">
+            {filteredActivities.map((activity) => (
+              <motion.div
+                key={activity.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.01 }}
+                className="bg-[#0c1442] rounded-2xl p-6 transition-colors hover:bg-[#0f1957] group"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-white font-medium text-lg group-hover:text-white/90">
+                      {activity.title}
+                    </h3>
+                    <p className="text-white/60 text-sm mt-1">
+                      {activity.contributions} new contributions
+                    </p>
+                  </div>
+                  <span className="text-white font-medium text-lg">
+                    ${activity.amount}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+            {filteredActivities.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-white/60">No activities found matching your search.</p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </PageLayout>
   )
 } 

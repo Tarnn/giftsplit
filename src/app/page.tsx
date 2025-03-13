@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import Logo from '@/components/ui/Logo'
 import { useAuth } from '@/context/AuthContext'
+import SparkleEffect from '@/components/ui/SparkleEffect'
 
 // Animation variants
 const fadeInUp = {
@@ -23,6 +24,40 @@ const floatAnimation = {
     transition: {
       duration: 4,
       repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+}
+
+// Add new animation variants
+const cardVariants = {
+  initial: { scale: 0.9, opacity: 0 },
+  animate: { 
+    scale: 1, 
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  },
+  hover: {
+    scale: 1.05,
+    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 10
+    }
+  }
+}
+
+const iconVariants = {
+  initial: { rotate: 0 },
+  hover: { 
+    rotate: [0, -10, 10, -10, 0],
+    transition: {
+      duration: 0.5,
       ease: "easeInOut"
     }
   }
@@ -121,41 +156,64 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] via-[#121a4a] to-[#1a1248]">
+      {/* Background Sparkles */}
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+        <SparkleEffect color="#ffffff" size={2.5} count={20} />
+      </div>
+
       {/* Header */}
       <motion.header 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="fixed top-0 left-0 right-0 z-50"
       >
-        {/* Animated Background Gradient */}
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20"
-          animate={{
-            backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        
-        {/* Glass Background */}
         <div className="relative backdrop-blur-xl bg-black/20">
           <div className="container flex h-16 items-center justify-between px-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Logo />
-            </Link>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={signIn}
-              className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <User className="mr-2 h-4 w-4" />
-              Dashboard
-            </Button>
+              <Link href="/" className="flex items-center gap-2 group">
+                <Logo />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/dashboard')}
+                className="relative px-5 py-2 text-sm text-white/90 bg-[#0c1442] rounded-xl overflow-hidden group"
+              >
+                <span className="relative z-10 font-medium">
+                  {user ? 'Dashboard' : 'Sign In'}
+                </span>
+
+                {/* Glass overlay */}
+                <div className="absolute inset-0 bg-white/[0.02]" />
+
+                {/* Hover effect */}
+                <motion.div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                  initial={false}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="absolute inset-0 bg-[#1a1f4d]" />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5, x: -20 }}
+                    whileHover={{ opacity: 1, scale: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2"
+                  >
+                    <DollarSign className="w-4 h-4 text-blue-400" />
+                  </motion.div>
+                </motion.div>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </motion.header>
@@ -163,7 +221,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
         <motion.div 
-          className="w-full max-w-6xl mx-auto text-center space-y-16"
+          className="w-full max-w-6xl mx-auto text-center space-y-16 relative"
           initial="initial"
           animate="animate"
           variants={{
@@ -177,10 +235,10 @@ export default function Home() {
           {/* Hero Section */}
           <motion.div 
             variants={fadeInUp}
-            className="space-y-6 -mt-20"
+            className="space-y-8 -mt-32"
           >
             <motion.h1 
-              className="text-6xl md:text-7xl font-bold tracking-tight"
+              className="text-6xl md:text-7xl font-bold tracking-tight mb-12"
               variants={floatAnimation}
             >
               <span className="bg-gradient-to-r from-[#4B9EFF] via-[#9D7BFF] to-[#E0A0FF] bg-clip-text text-transparent">
@@ -202,7 +260,7 @@ export default function Home() {
             </motion.h1>
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-gray-300 max-w-3xl mx-auto"
+              className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"
             >
               Create a gift link and share it with friends.
               <br />
@@ -264,42 +322,50 @@ export default function Home() {
           >
             {[
               {
-                icon: <div className="w-14 h-14 bg-blue-100/90 rounded-full flex items-center justify-center">
-                  <Gift className="w-7 h-7 text-blue-600" />
-                </div>,
+                icon: <Gift className="w-7 h-7 text-blue-600" />,
+                bg: "bg-blue-100/90",
                 title: 'Easy to Use',
                 description: 'Create a gift link in seconds and share it with your friends.'
               },
               {
-                icon: <div className="w-14 h-14 bg-green-100/90 rounded-full flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-green-600" />
-                </div>,
+                icon: <Shield className="w-7 h-7 text-green-600" />,
+                bg: "bg-green-100/90",
                 title: 'Secure Payments',
                 description: 'All payments are processed securely through Stripe.'
               },
               {
-                icon: <div className="w-14 h-14 bg-purple-100/90 rounded-full flex items-center justify-center">
-                  <LineChart className="w-7 h-7 text-purple-600" />
-                </div>,
+                icon: <LineChart className="w-7 h-7 text-purple-600" />,
+                bg: "bg-purple-100/90",
                 title: 'Track Progress',
                 description: 'See who has paid and how much is left to collect.'
               }
-            ].map((feature) => (
+            ].map((feature, i) => (
               <motion.div
                 key={feature.title}
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center text-center space-y-4"
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center text-center space-y-4 relative overflow-hidden group"
+                variants={cardVariants}
+                whileHover="hover"
+                custom={i}
               >
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`w-14 h-14 ${feature.bg} rounded-full flex items-center justify-center relative z-10`}
+                  variants={iconVariants}
+                  whileHover="hover"
                 >
                   {feature.icon}
                 </motion.div>
-                <h3 className="text-xl font-semibold text-white">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+                <motion.h3 
+                  className="text-xl font-semibold text-white relative z-10"
+                  variants={{
+                    hover: { scale: 1.05 }
+                  }}
+                >
                   {feature.title}
-                </h3>
-                <p className="text-gray-300">
+                </motion.h3>
+                <p className="text-gray-300 relative z-10">
                   {feature.description}
                 </p>
               </motion.div>
@@ -308,12 +374,19 @@ export default function Home() {
         </motion.div>
       </main>
 
-      {/* Background dots */}
+      {/* Background dots with animation */}
       <motion.div 
         className="fixed inset-0 bg-[radial-gradient(#ffffff11_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+        animate={{ 
+          opacity: [0.2, 0.3, 0.2],
+          scale: [1, 1.02, 1]
+        }}
+        transition={{ 
+          duration: 10,
+          repeat: Infinity,
+          ease: "linear"
+        }}
       />
     </div>
   )

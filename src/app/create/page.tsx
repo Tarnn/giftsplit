@@ -1,69 +1,67 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { Layout } from '@/components/layout/Layout'
-import { Header } from '@/components/layout/Header'
-import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import { useToast } from '@/components/ui/use-toast'
-import { Progress } from '@/components/ui/Progress'
-import { Badge } from '@/components/ui/Badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { Separator } from '@/components/ui/Separator'
-import { useAuth } from '@/context/AuthContext'
-import GiftSuccessDialog from '@/components/gift/GiftSuccessDialog'
-import { Loader2, AlertCircle } from 'lucide-react'
 import PageLayout from '@/components/layout/PageLayout'
-import { theme, components } from '@/styles/theme'
+import { useToast } from '@/components/ui/use-toast'
+import { Loader2, AlertCircle } from 'lucide-react'
+
+interface FormData {
+  description: string
+  amount: string
+  organizerEmail: string
+}
 
 interface FormErrors {
   description?: string
   amount?: string
-  organizerEmail?: string
 }
 
 export default function CreateGiftPage() {
-  const { toast } = useToast()
   const router = useRouter()
-  const { user, signIn } = useAuth()
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const [giftId, setGiftId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     description: '',
     amount: '',
-    organizerEmail: '',
+    organizerEmail: ''
   })
 
-  const validateStep = (currentStep: number): boolean => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }))
+    }
+  }
+
+  const validateForm = () => {
     const newErrors: FormErrors = {}
-
-    if (currentStep === 1) {
-      if (!formData.description.trim()) {
-        newErrors.description = 'Description is required'
-      } else if (formData.description.length > 50) {
-        newErrors.description = 'Description must be 50 characters or less'
-      }
-
-      if (!formData.amount) {
-        newErrors.amount = 'Amount is required'
-      } else if (Number(formData.amount) < 1) {
-        newErrors.amount = 'Amount must be at least $1'
-      } else if (Number(formData.amount) > 10000) {
-        newErrors.amount = 'Maximum amount is $10,000'
-      }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Gift description is required'
+    } else if (formData.description.length > 50) {
+      newErrors.description = 'Description must be 50 characters or less'
     }
 
-    if (currentStep === 2) {
-      if (!formData.organizerEmail) {
-        newErrors.organizerEmail = 'Email is required'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.organizerEmail)) {
-        newErrors.organizerEmail = 'Invalid email format'
+    if (!formData.amount) {
+      newErrors.amount = 'Amount is required'
+    } else {
+      const amount = parseFloat(formData.amount)
+      if (isNaN(amount) || amount <= 0) {
+        newErrors.amount = 'Please enter a valid amount'
+      } else if (amount > 10000) {
+        newErrors.amount = 'Maximum amount is $10,000'
       }
     }
 
@@ -71,195 +69,258 @@ export default function CreateGiftPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleNextStep = () => {
-    if (validateStep(step)) {
-      setStep(step + 1)
+  const handleNextStep = async () => {
+    if (step === 1) {
+      if (!validateForm()) {
+        return
+      }
+      setStep(2)
+    } else {
+      await handleCreateGift()
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateStep(2)) return
-
+  const handleCreateGift = async () => {
     setIsLoading(true)
-
     try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // TODO: Replace with actual API call
+      const giftData = {
+        description: formData.description,
+        amount: parseFloat(formData.amount),
+        organizerEmail: formData.organizerEmail || 'anonymous@example.com'
+      }
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
-      // Generate a gift ID only when the form is submitted
-      const newGiftId = Math.random().toString(36).substring(2, 8)
-      setGiftId(newGiftId)
-      setShowSuccessDialog(true)
+      // Generate a temporary gift ID (replace with actual API response)
+      const giftId = Math.random().toString(36).substr(2, 9)
+      
+      toast({
+        title: "Success!",
+        description: "Your gift has been created successfully.",
+      })
+
+      // Redirect to the gift page
+      router.push(`/gifts/${giftId}`)
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to create gift link. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to create gift. Please try again.",
+        variant: "destructive"
       })
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Animation variants
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
-  }
-
-  const renderError = (error?: string) => {
-    if (!error) return null
-    return (
-      <motion.p
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-1 flex items-center gap-1 text-sm text-red-500"
-      >
-        <AlertCircle className="h-4 w-4" />
-        {error}
-      </motion.p>
-    )
-  }
+  const characterCount = formData.description.length
+  const maxCharacters = 50
+  const progress = (step / 2) * 100
 
   return (
     <PageLayout>
-      <motion.div 
-        className="max-w-2xl mx-auto"
-        initial="initial"
-        animate="animate"
-        variants={{
-          animate: {
-            transition: {
-              staggerChildren: 0.1
-            }
-          }
-        }}
-      >
-        <motion.div variants={fadeInUp} className="text-center mb-8">
-          <h1 className={`text-4xl font-bold mb-4 ${theme.colors.text.primary}`}>
-            Create a Gift Link
-          </h1>
-          <p className={theme.colors.text.secondary}>
+      <div className="max-w-2xl mx-auto pt-12 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-bold text-white mb-4">Create a Gift Link</h1>
+          <p className="text-white/70 text-lg">
             Set up your group gift in just a few steps. No sign-up required!
           </p>
         </motion.div>
 
         <motion.div
-          variants={fadeInUp}
-          className={components.card}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5"
         >
-          {/* Progress bar */}
-          <div className="mb-8">
-            <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-purple-500"
-                initial={{ width: '0%' }}
-                animate={{ width: `${(step / 2) * 100}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <div className="flex justify-between mt-2 text-sm text-gray-400">
-              <span>Step {step} of 2</span>
-              <span>{(step / 2) * 100}% Complete</span>
-            </div>
+          {/* Progress Bar */}
+          <div className="relative h-2 bg-white/5 rounded-full mb-8 overflow-hidden">
+            <motion.div
+              className="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-500 to-purple-500"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5 }}
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <motion.div
-              variants={fadeInUp}
-              className="space-y-4"
-            >
-              <label className={`block ${theme.colors.text.primary}`}>
-                Gift Description
-                <input
-                  type="text"
-                  placeholder="e.g., Watch for Dad"
-                  className={components.input}
-                  value={formData.description}
-                  onChange={(e) => {
-                    setFormData({ ...formData, description: e.target.value })
-                    setErrors({ ...errors, description: undefined })
-                  }}
-                  maxLength={50}
-                />
-                <span className="text-sm text-gray-400 float-right mt-1">
-                  {formData.description.length}/50 characters
-                </span>
-              </label>
+          <div className="flex justify-between items-center mb-6">
+            <span className="text-white/70">Step {step} of 2</span>
+            <span className="text-white/70">{progress}% Complete</span>
+          </div>
 
-              <label className={`block ${theme.colors.text.primary}`}>
-                Total Amount (USD)
-                <input
-                  type="text"
-                  placeholder="e.g., 150"
-                  className={components.input}
-                  value={formData.amount}
-                  onChange={(e) => {
-                    setFormData({ ...formData, amount: e.target.value })
-                    setErrors({ ...errors, amount: undefined })
-                  }}
-                />
-              </label>
-            </motion.div>
+          <div className="space-y-6">
+            {step === 1 ? (
+              <>
+                <div>
+                  <label className="block text-white mb-2" htmlFor="description">
+                    Gift Description
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Watch for Dad"
+                      className={`w-full px-4 py-3 bg-[#0c1442] text-white rounded-xl border ${
+                        errors.description ? 'border-red-500' : 'border-white/10'
+                      } focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all`}
+                      maxLength={maxCharacters}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 text-sm">
+                      {characterCount}/{maxCharacters} characters
+                    </span>
+                  </div>
+                  {errors.description && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 flex items-center gap-2 text-sm text-red-500"
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.description}
+                    </motion.p>
+                  )}
+                </div>
 
-            <motion.div
-              variants={fadeInUp}
-              className="flex justify-end"
-            >
-              <Button
-                type="submit"
-                className={`${components.button.primary} px-8`}
-              >
-                Next Step
-              </Button>
-            </motion.div>
-          </form>
+                <div>
+                  <label className="block text-white mb-2" htmlFor="amount">
+                    Total Amount (USD)
+                  </label>
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 150"
+                    className={`w-full px-4 py-3 bg-[#0c1442] text-white rounded-xl border ${
+                      errors.amount ? 'border-red-500' : 'border-white/10'
+                    } focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all`}
+                    min="1"
+                    max="10000"
+                    step="0.01"
+                  />
+                  {errors.amount && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 flex items-center gap-2 text-sm text-red-500"
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.amount}
+                    </motion.p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                <label className="block text-white mb-2" htmlFor="organizerEmail">
+                  Your Email (Optional)
+                </label>
+                <input
+                  type="email"
+                  id="organizerEmail"
+                  name="organizerEmail"
+                  value={formData.organizerEmail}
+                  onChange={handleInputChange}
+                  placeholder="your@email.com"
+                  className="w-full px-4 py-3 bg-[#0c1442] text-white rounded-xl border border-white/10 focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                />
+                <p className="mt-2 text-white/40 text-sm">
+                  Enter your email to track your gift and receive updates
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-end mt-8">
+              {step === 1 ? (
+                <motion.button
+                  onClick={handleNextStep}
+                  className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                    formData.description && formData.amount
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : 'bg-white/5 text-white/40 cursor-not-allowed'
+                  }`}
+                  whileHover={
+                    formData.description && formData.amount
+                      ? { scale: 1.02 }
+                      : {}
+                  }
+                  whileTap={
+                    formData.description && formData.amount
+                      ? { scale: 0.98 }
+                      : {}
+                  }
+                >
+                  Next Step
+                </motion.button>
+              ) : (
+                <motion.button
+                  onClick={handleNextStep}
+                  disabled={isLoading}
+                  className="px-6 py-3 rounded-xl font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all flex items-center gap-2"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Gift'
+                  )}
+                </motion.button>
+              )}
+            </div>
+          </div>
         </motion.div>
 
-        {/* Feature cards */}
-        <motion.div
-          variants={fadeInUp}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12"
-        >
-          {[
-            { label: 'No Sign-Up', description: 'Create and share your gift link in minutes' },
-            { label: 'Secure', description: 'Collect funds directly via Stripe' },
-            { label: 'Low Fee', description: 'One-time fee per gift' }
-          ].map((feature, i) => (
-            <motion.div
-              key={feature.label}
-              className={`${components.card} text-center`}
-              whileHover={{ y: -5 }}
-            >
-              <h3 className={`text-lg font-semibold mb-2 ${theme.colors.text.primary}`}>
-                {feature.label}
-              </h3>
-              <p className={theme.colors.text.muted}>
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+          >
+            <h3 className="text-white text-lg font-medium mb-2">No Sign-Up</h3>
+            <p className="text-white/60">
+              Create and share your gift link in minutes
+            </p>
+          </motion.div>
 
-      <GiftSuccessDialog
-        isOpen={showSuccessDialog}
-        onClose={() => {
-          setShowSuccessDialog(false)
-          setFormData({
-            description: '',
-            amount: '',
-            organizerEmail: '',
-          })
-        }}
-        giftLink={`http://localhost:3000/gift/${giftId}`}
-        giftDetails={{
-          description: formData.description,
-          amount: formData.amount,
-        }}
-      />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+          >
+            <h3 className="text-white text-lg font-medium mb-2">Secure</h3>
+            <p className="text-white/60">
+              Collect funds directly via Stripe
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+          >
+            <h3 className="text-white text-lg font-medium mb-2">Low Fee</h3>
+            <p className="text-white/60">
+              One-time fee per gift
+            </p>
+          </motion.div>
+        </div>
+      </div>
     </PageLayout>
   )
 } 

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Layout } from '@/components/layout/Layout'
-import { Header } from '@/components/layout/Header'
+import PageLayout from '@/components/layout/PageLayout'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { useToast } from '@/components/ui/use-toast'
@@ -112,118 +111,122 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <Layout>
-        <Header />
-        <main className="container py-8">
+      <PageLayout>
+        <div className="max-w-4xl mx-auto pt-12 px-4">
           <div className="text-center">
-            <h1 className="text-2xl font-bold">Please sign in to view your profile</h1>
+            <h1 className="text-2xl font-bold text-white">Please sign in to view your profile</h1>
           </div>
-        </main>
-      </Layout>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <Layout>
-      <Header />
-      <main className="container py-8">
+    <PageLayout>
+      <div className="max-w-4xl mx-auto pt-12 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto max-w-2xl"
         >
-          <Card className="mb-6">
-            <div className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold">{user.name}</h1>
-                  <p className="text-gray-600">{user.email}</p>
-                </div>
-                {isPremium ? (
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <Crown className="h-3 w-3 text-yellow-500" />
-                    Premium
-                  </Badge>
-                ) : (
-                  <Button
-                    onClick={handleUnlockPremium}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Crown className="mr-2 h-4 w-4" />
-                        Unlock Premium ($2)
-                      </>
-                    )}
-                  </Button>
-                )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#070b2b] rounded-3xl p-8 border border-white/5 mb-6"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-white">{user.name}</h1>
+                <p className="text-white/60">{user.email}</p>
               </div>
+              {isPremium ? (
+                <Badge variant="outline" className="flex items-center gap-1 bg-[#1a1f4d]/30 text-white border-white/10">
+                  <Crown className="h-3 w-3 text-yellow-500" />
+                  Premium
+                </Badge>
+              ) : (
+                <Button
+                  onClick={handleUnlockPremium}
+                  disabled={isLoading}
+                  className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                  size="sm"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="mr-2 h-4 w-4" />
+                      Unlock Premium ($2)
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-lg bg-gray-50 p-4">
-                  <p className="text-sm text-gray-600">Total Given</p>
-                  <p className="text-2xl font-bold">${user.given}</p>
-                </div>
-                <div className="rounded-lg bg-gray-50 p-4">
-                  <p className="text-sm text-gray-600">Total Received</p>
-                  <p className="text-2xl font-bold">${user.received}</p>
-                </div>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-xl bg-[#1a1f4d]/30 p-4 border border-white/10">
+                <p className="text-sm text-white/60">Total Given</p>
+                <p className="text-2xl font-bold text-white">${user.given}</p>
+              </div>
+              <div className="rounded-xl bg-[#1a1f4d]/30 p-4 border border-white/10">
+                <p className="text-sm text-white/60">Total Received</p>
+                <p className="text-2xl font-bold text-white">${user.received}</p>
               </div>
             </div>
-          </Card>
+          </motion.div>
 
           {isPremium && (
-            <Card className="mb-6">
-              <div className="p-6">
-                <h2 className="flex items-center gap-2 font-medium">
-                  <Crown className="h-4 w-4 text-yellow-500" />
-                  Premium Features
-                </h2>
-                <div className="mt-4 grid gap-4">
-                  <Button
-                    variant="outline"
-                    className="justify-between"
-                    onClick={handleExportReceipts}
-                    disabled={isLoading}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Receipt className="h-4 w-4" />
-                      Export All Receipts (PDF)
-                    </div>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="justify-between"
-                    onClick={() => window.location.href = '/dashboard'}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Gift className="h-4 w-4" />
-                      Multi-Gift Dashboard
-                    </div>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#070b2b] rounded-3xl p-8 border border-white/5 mb-6"
+            >
+              <h2 className="flex items-center gap-2 font-medium text-white">
+                <Crown className="h-4 w-4 text-yellow-500" />
+                Premium Features
+              </h2>
+              <div className="mt-4 grid gap-4">
+                <Button
+                  className="justify-between bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                  onClick={handleExportReceipts}
+                  disabled={isLoading}
+                >
+                  <div className="flex items-center gap-2">
+                    <Receipt className="h-4 w-4" />
+                    Export All Receipts (PDF)
+                  </div>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  className="justify-between bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                  onClick={() => window.location.href = '/dashboard'}
+                >
+                  <div className="flex items-center gap-2">
+                    <Gift className="h-4 w-4" />
+                    Multi-Gift Dashboard
+                  </div>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
-            </Card>
+            </motion.div>
           )}
 
-          <Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#070b2b] rounded-3xl border border-white/5"
+          >
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="border-b px-6 pt-6">
-                <TabsList className="w-full">
-                  <TabsTrigger value="history" className="flex-1">
+              <div className="border-b border-white/5 px-6 pt-6">
+                <TabsList className="w-full bg-[#1a1f4d]/30">
+                  <TabsTrigger value="history" className="flex-1 text-white data-[state=active]:bg-blue-500">
                     <History className="mr-2 h-4 w-4" />
                     Gift History
                   </TabsTrigger>
-                  <TabsTrigger value="receipts" className="flex-1">
+                  <TabsTrigger value="receipts" className="flex-1 text-white data-[state=active]:bg-blue-500">
                     <Receipt className="mr-2 h-4 w-4" />
                     Receipts
                   </TabsTrigger>
@@ -237,28 +240,18 @@ export default function ProfilePage() {
                       key={gift.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center justify-between rounded-lg border p-4"
+                      className="flex items-center justify-between rounded-xl bg-[#1a1f4d]/30 p-4 border border-white/10"
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{gift.description}</span>
-                          <Badge variant="outline">
+                          <span className="font-medium text-white">{gift.description}</span>
+                          <Badge variant="outline" className="bg-blue-500/20 text-white border-white/10">
                             {gift.role === 'organizer' ? 'Organizer' : 'Contributor'}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600">{gift.date}</p>
+                        <p className="text-sm text-white/60">{gift.date}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">${gift.amount}</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-auto p-0"
-                          onClick={() => window.location.href = `/gift/${gift.id}`}
-                        >
-                          View Gift
-                        </Button>
-                      </div>
+                      <span className="font-bold text-white">${gift.amount}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -271,32 +264,32 @@ export default function ProfilePage() {
                       key={gift.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center justify-between rounded-lg border p-4"
+                      className="flex items-center justify-between rounded-xl bg-[#1a1f4d]/30 p-4 border border-white/10"
                     >
                       <div>
-                        <p className="font-medium">{gift.description}</p>
-                        <p className="text-sm text-gray-600">{gift.date}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white">{gift.description}</span>
+                          <Badge variant="outline" className="bg-blue-500/20 text-white border-white/10">
+                            Receipt
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-white/60">{gift.date}</p>
                       </div>
                       <Button
-                        variant="outline"
                         size="sm"
+                        className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                         onClick={() => handleExportReceipts()}
-                        disabled={isLoading}
                       >
-                        {isLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Download className="h-4 w-4" />
-                        )}
+                        <Download className="h-4 w-4" />
                       </Button>
                     </motion.div>
                   ))}
                 </div>
               </TabsContent>
             </Tabs>
-          </Card>
+          </motion.div>
         </motion.div>
-      </main>
-    </Layout>
+      </div>
+    </PageLayout>
   )
 } 
