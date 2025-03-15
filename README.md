@@ -6,8 +6,7 @@ Deployed on vercel: https://giftsplit.vercel.app/
 
 ## Demo
 
-Check out GiftSplit in action, there's still some bugs -- this was just a prototype!:
-[![GiftSplit Demo](https://img.youtube.com/vi/_r2x69nSJr0/maxresdefault.jpg)](https://youtu.be/_r2x69nSJr0)
+Check out GiftSplit in action, there's still some bugs -- this was just a prototype!
 
 ## Getting Started
 
