@@ -1,7 +1,8 @@
-interface CreateCheckoutSessionParams {
+export interface CreateCheckoutSessionParams {
   giftId: string
   contributorName: string
   amount: number
+  message?: string
 }
 
 interface CheckoutSession {

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Layout } from '@/components/layout/Layout'
-import { Header } from '@/components/layout/Header'
+import { PageLayout } from '@/components/layout/PageLayout'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { useToast } from '@/components/ui/use-toast'
@@ -19,7 +18,6 @@ import {
   Plus,
   Search
 } from 'lucide-react'
-import PageLayout from '@/components/layout/PageLayout'
 
 interface GiftSummary {
   id: string
@@ -32,177 +30,161 @@ interface GiftSummary {
   createdAt: string
 }
 
+// Mock data
+const mockGifts: GiftSummary[] = [
+  {
+    id: 'gift1',
+    description: 'Birthday Gift Collection',
+    totalAmount: 150,
+    collectedAmount: 100,
+    contributors: 2,
+    status: 'active',
+    role: 'organizer',
+    createdAt: '2024-03-13T09:00:00Z'
+  },
+  {
+    id: 'gift2',
+    description: 'Anniversary Present',
+    totalAmount: 150,
+    collectedAmount: 150,
+    contributors: 3,
+    status: 'completed',
+    role: 'contributor',
+    createdAt: '2024-03-12T09:00:00Z'
+  },
+  {
+    id: 'gift3',
+    description: 'Wedding Gift Pool',
+    totalAmount: 150,
+    collectedAmount: 50,
+    contributors: 1,
+    status: 'active',
+    role: 'contributor',
+    createdAt: '2024-03-11T09:00:00Z'
+  }
+]
+
 export default function DashboardPage() {
   const { user } = useAuth()
-  const { toast } = useToast()
   const [searchQuery, setSearchQuery] = useState('')
-  const [filter, setFilter] = useState<'all' | 'organizing' | 'contributing'>('all')
 
-  // Mock gift data
-  const gifts: GiftSummary[] = [
-    {
-      id: 'gift1',
-      description: 'Watch for Dad',
-      totalAmount: 200,
-      collectedAmount: 150,
-      contributors: 3,
-      status: 'active',
-      role: 'organizer',
-      createdAt: '2024-03-13T09:00:00Z'
-    },
-    {
-      id: 'gift2',
-      description: 'Birthday gift for Sarah',
-      totalAmount: 150,
-      collectedAmount: 150,
-      contributors: 5,
-      status: 'completed',
-      role: 'contributor',
-      createdAt: '2024-03-12T09:00:00Z'
-    }
-  ]
+  const activeGifts = mockGifts.filter(gift => gift.status === 'active')
+  const totalCollected = mockGifts.reduce((sum, gift) => sum + gift.collectedAmount, 0)
+  const totalContributors = mockGifts.reduce((sum, gift) => sum + gift.contributors, 0)
 
-  const filteredGifts = gifts
-    .filter(gift => {
-      if (filter === 'organizing') return gift.role === 'organizer'
-      if (filter === 'contributing') return gift.role === 'contributor'
-      return true
-    })
-    .filter(gift => 
-      gift.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-
-  // Mock activity data
-  const activities = [
-    {
-      id: 1,
-      title: 'Birthday Gift Collection',
-      contributions: 2,
-      amount: 150,
-    },
-    {
-      id: 2,
-      title: 'Anniversary Present',
-      contributions: 3,
-      amount: 150,
-    },
-    {
-      id: 3,
-      title: 'Wedding Gift Pool',
-      contributions: 1,
-      amount: 150,
-    },
-  ]
-
-  const filteredActivities = activities.filter(activity =>
-    activity.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredGifts = mockGifts.filter(gift =>
+    gift.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   if (!user) {
     return (
-      <Layout>
-        <Header />
-        <main className="container py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold">Please sign in to view your dashboard</h1>
-          </div>
-        </main>
-      </Layout>
+      <PageLayout>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Please sign in to view your dashboard</h1>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
     <PageLayout>
-      <div className="space-y-6 max-w-6xl mx-auto">
-        {/* Stats Section */}
+      <div className="max-w-4xl mx-auto pt-12 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5"
+          className="text-center mb-12"
         >
-          <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="bg-[#0c1442] rounded-2xl p-6"
-            >
-              <h3 className="text-white/70 text-lg font-medium mb-3">Active Gifts</h3>
-              <p className="text-4xl font-bold text-white">2</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="bg-[#0c1442] rounded-2xl p-6"
-            >
-              <h3 className="text-white/70 text-lg font-medium mb-3">Total Collected</h3>
-              <p className="text-4xl font-bold text-white">$300</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="bg-[#0c1442] rounded-2xl p-6"
-            >
-              <h3 className="text-white/70 text-lg font-medium mb-3">Contributors</h3>
-              <p className="text-4xl font-bold text-white">8</p>
-            </motion.div>
-          </div>
+          <h1 className="text-4xl font-bold text-white mb-4">Dashboard</h1>
         </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-[#070b2b] rounded-3xl p-6 border border-white/5"
+          >
+            <h2 className="text-white/60 text-sm mb-2">Active Gifts</h2>
+            <p className="text-4xl font-bold text-white">{activeGifts.length}</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-[#070b2b] rounded-3xl p-6 border border-white/5"
+          >
+            <h2 className="text-white/60 text-sm mb-2">Total Collected</h2>
+            <p className="text-4xl font-bold text-white">${totalCollected}</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-[#070b2b] rounded-3xl p-6 border border-white/5 sm:col-span-2 lg:col-span-1"
+          >
+            <h2 className="text-white/60 text-sm mb-2">Contributors</h2>
+            <p className="text-4xl font-bold text-white">{totalContributors}</p>
+          </motion.div>
+        </div>
 
         {/* Recent Activity Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5"
+          className="bg-[#070b2b] rounded-3xl border border-white/5 p-6"
         >
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-white">Recent Activity</h2>
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold text-white">Recent Activity</h2>
+            <div className="w-full sm:w-auto relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
               <input
                 type="text"
                 placeholder="Search activities..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-[#0c1442] text-white pl-10 pr-4 py-2 rounded-xl border border-white/5 focus:outline-none focus:border-white/20 placeholder:text-white/40"
+                className="w-full sm:w-64 bg-[#1a1f4d]/30 text-white placeholder-white/40 rounded-xl pl-10 pr-4 py-2 border border-white/10 focus:outline-none focus:border-white/20"
               />
             </div>
           </div>
+
           <div className="space-y-4">
-            {filteredActivities.map((activity) => (
+            {filteredGifts.map((gift) => (
               <motion.div
-                key={activity.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.01 }}
-                className="bg-[#0c1442] rounded-2xl p-6 transition-colors hover:bg-[#0f1957] group"
+                key={gift.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#1a1f4d]/30 rounded-xl p-4 border border-white/10"
               >
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-4">
                   <div>
-                    <h3 className="text-white font-medium text-lg group-hover:text-white/90">
-                      {activity.title}
-                    </h3>
-                    <p className="text-white/60 text-sm mt-1">
-                      {activity.contributions} new contributions
-                    </p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-medium text-white">{gift.description}</span>
+                      <Badge variant="outline" className="bg-blue-500/20 text-white border-white/10">
+                        {gift.role === 'organizer' ? 'Organizer' : 'Contributor'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-white/60">{gift.contributors} new contributions</p>
                   </div>
-                  <span className="text-white font-medium text-lg">
-                    ${activity.amount}
-                  </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <span className="text-xl font-bold text-white">${gift.collectedAmount}</span>
+                    <Button
+                      size="sm"
+                      className="w-full sm:w-auto bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                      onClick={() => window.location.href = `/gift/${gift.id}`}
+                    >
+                      View Details
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Progress value={(gift.collectedAmount / gift.totalAmount) * 100} />
                 </div>
               </motion.div>
             ))}
-            {filteredActivities.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-white/60">No activities found matching your search.</p>
-              </div>
-            )}
           </div>
         </motion.div>
       </div>

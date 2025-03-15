@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import PageLayout from '@/components/layout/PageLayout'
+import { PageLayout } from '@/components/layout/PageLayout'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle, UserPlus, Shield, CreditCard } from 'lucide-react'
 
 interface FormData {
   description: string
@@ -32,10 +32,29 @@ export default function CreateGiftPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+    
+    if (name === 'amount') {
+      // Remove any non-digit characters except decimal point
+      const cleanValue = value.replace(/[^\d.]/g, '')
+      // Ensure only one decimal point
+      const parts = cleanValue.split('.')
+      const formattedValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleanValue
+      // Limit to 2 decimal places
+      const finalValue = formattedValue.includes('.') 
+        ? formattedValue.slice(0, formattedValue.indexOf('.') + 3) 
+        : formattedValue
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: finalValue
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
+
     // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({
@@ -188,24 +207,24 @@ export default function CreateGiftPage() {
                   )}
                 </div>
 
-                <div>
+                <div className="mt-8">
                   <label className="block text-white mb-2" htmlFor="amount">
                     Total Amount (USD)
                   </label>
-                  <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 150"
-                    className={`w-full px-4 py-3 bg-[#0c1442] text-white rounded-xl border ${
-                      errors.amount ? 'border-red-500' : 'border-white/10'
-                    } focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all`}
-                    min="1"
-                    max="10000"
-                    step="0.01"
-                  />
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">$</span>
+                    <input
+                      type="text"
+                      id="amount"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      placeholder="0.00"
+                      className={`w-full pl-8 pr-4 py-3 bg-[#0c1442] text-white rounded-xl border ${
+                        errors.amount ? 'border-red-500' : 'border-white/10'
+                      } focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all`}
+                    />
+                  </div>
                   {errors.amount && (
                     <motion.p
                       initial={{ opacity: 0, y: -10 }}
@@ -283,14 +302,17 @@ export default function CreateGiftPage() {
         </motion.div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+            className="bg-gradient-to-br from-[#0c1442] to-[#070b2b] rounded-2xl p-8 text-center border border-white/5 hover:border-white/10 transition-all"
           >
-            <h3 className="text-white text-lg font-medium mb-2">No Sign-Up</h3>
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 mb-4">
+              <UserPlus className="w-6 h-6" />
+            </div>
+            <h3 className="text-white text-lg font-medium mb-3">No Sign-Up</h3>
             <p className="text-white/60">
               Create and share your gift link in minutes
             </p>
@@ -300,9 +322,12 @@ export default function CreateGiftPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+            className="bg-gradient-to-br from-[#0c1442] to-[#070b2b] rounded-2xl p-8 text-center border border-white/5 hover:border-white/10 transition-all"
           >
-            <h3 className="text-white text-lg font-medium mb-2">Secure</h3>
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 mb-4">
+              <Shield className="w-6 h-6" />
+            </div>
+            <h3 className="text-white text-lg font-medium mb-3">Secure</h3>
             <p className="text-white/60">
               Collect funds directly via Stripe
             </p>
@@ -312,9 +337,12 @@ export default function CreateGiftPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#070b2b] rounded-2xl p-6 text-center"
+            className="bg-gradient-to-br from-[#0c1442] to-[#070b2b] rounded-2xl p-8 text-center border border-white/5 hover:border-white/10 transition-all"
           >
-            <h3 className="text-white text-lg font-medium mb-2">Low Fee</h3>
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-green-500/10 text-green-500 mb-4">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <h3 className="text-white text-lg font-medium mb-3">Low Fee</h3>
             <p className="text-white/60">
               One-time fee per gift
             </p>

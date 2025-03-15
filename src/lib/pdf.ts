@@ -1,11 +1,12 @@
 import { jsPDF } from 'jspdf'
 
-interface ReceiptData {
+export interface ReceiptData {
   giftDescription: string
   contributorName: string
   amount: number
   date: string
   transactionId: string
+  message?: string
 }
 
 export async function generateReceipt(data: ReceiptData): Promise<string> {

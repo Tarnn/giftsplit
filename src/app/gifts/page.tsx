@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import PageLayout from '@/components/layout/PageLayout'
+import { PageLayout } from '@/components/layout/PageLayout'
 import { Search, Plus } from 'lucide-react'
 
 interface Gift {
@@ -63,7 +63,7 @@ export default function GiftsPage() {
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto pt-12 px-4">
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6 mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -78,7 +78,7 @@ export default function GiftsPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => router.push('/create')}
-            className="px-6 py-3 rounded-xl font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all flex items-center justify-center gap-2"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

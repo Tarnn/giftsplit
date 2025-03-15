@@ -18,7 +18,8 @@ import { createCheckoutSession } from '@/lib/stripe'
 import { generateReceipt } from '@/lib/pdf'
 import { useParams } from 'next/navigation'
 import { theme, components } from '@/styles/theme'
-import PageLayout from '@/components/layout/PageLayout'
+import { PageLayout } from '@/components/layout/PageLayout'
+import { NextPage } from 'next'
 
 interface ContributionReceipt {
   url: string
@@ -89,7 +90,7 @@ const staggerContainer = {
   }
 }
 
-export default function GiftPage() {
+const GiftPage: NextPage = () => {
   const { id } = useParams() as { id: string }
   const { toast } = useToast()
   const { user, signIn, isLoading: isAuthLoading } = useAuth()
@@ -299,237 +300,193 @@ export default function GiftPage() {
 
   return (
     <PageLayout>
-      <motion.div
-        className="max-w-3xl mx-auto"
-        initial="initial"
-        animate="animate"
-        variants={staggerContainer}
-      >
-        {/* Gift Details Card */}
-        <motion.div variants={fadeInUp} className={`${components.card} mb-8`}>
-          <div className="flex justify-between items-start mb-6">
+      <div className="max-w-4xl mx-auto pt-12 px-4 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[#070b2b] rounded-3xl p-8 border border-white/5 mb-8"
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
             <div>
-              <h1 className={`text-3xl font-bold mb-2 ${theme.colors.text.primary}`}>
-                Watch for Dad
-              </h1>
-              <p className={theme.colors.text.secondary}>
-                Organized by john@example.com
-              </p>
+              <h1 className="text-3xl font-bold text-white mb-2">{giftData.description}</h1>
+              <p className="text-white/60">Organized by {giftData.organizer}</p>
             </div>
             <Button
-              variant="outline"
               onClick={handleShare}
-              className={components.button.outline}
+              className="w-full sm:w-auto bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
             >
-              <Share2 className="w-4 h-4 mr-2" />
               {copied ? 'Copied!' : 'Share'}
+              <Share2 className="w-4 h-4 ml-2" />
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <h3 className={`text-sm font-medium mb-1 ${theme.colors.text.secondary}`}>Progress</h3>
-              <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-purple-500"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '60%' }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-              <div className="mt-2 flex justify-between text-sm">
-                <span className={theme.colors.text.muted}>$90 collected</span>
-                <span className={theme.colors.text.primary}>$150 total</span>
+              <h2 className="text-white/60 text-sm mb-2">Progress</h2>
+              <Progress value={progress} className="h-3" />
+              <div className="flex justify-between mt-2">
+                <span className="text-white/60">${totalPaid} collected</span>
+                <span className="text-white/60">${giftData.totalAmount} total</span>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Contributors Section */}
-        <motion.div variants={fadeInUp}>
-          <h2 className={`text-xl font-semibold mb-4 ${theme.colors.text.primary}`}>
-            Contributors
-          </h2>
-          <div className="space-y-4">
-            {giftData.contributors.map((contributor, index) => (
-              <motion.div
-                key={contributor.name}
-                className={`${components.card} flex justify-between items-center`}
-                whileHover={{ y: -2 }}
-              >
-                <div>
-                  <h3 className={`font-medium ${theme.colors.text.primary}`}>{contributor.name}</h3>
-                  <p className={theme.colors.text.muted}>
-                    Contributed ${contributor.amount}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={components.button.outline}
-                  onClick={() => handleDownloadReceipt(contributor)}
-                  disabled={isGeneratingReceipt}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Receipt
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Contribute Button */}
         <motion.div
-          variants={fadeInUp}
-          className="mt-8 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[#070b2b] rounded-3xl border border-white/5 overflow-hidden"
         >
-          <Button
-            size="lg"
-            className={`${components.button.primary} px-8 py-6 text-lg`}
-            onClick={() => setShowContributeForm(true)}
-          >
-            Contribute to Gift
-          </Button>
-        </motion.div>
+          <div className="p-8 border-b border-white/5">
+            <h2 className="text-xl font-bold text-white mb-6">Contributors</h2>
+            <div className="space-y-4">
+              {giftData.contributors.map((contributor, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 rounded-xl bg-[#1a1f4d]/30 border border-white/10"
+                >
+                  <div>
+                    <p className="font-medium text-white">{contributor.name}</p>
+                    <p className="text-sm text-white/60">Contributed ${contributor.amount}</p>
+                  </div>
+                  {contributor.receipt && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                      onClick={() => window.open(contributor.receipt?.url)}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Receipt
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        {showContributeForm && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6"
-          >
-            <form onSubmit={handleContribute} className="space-y-6">
-              <div className="space-y-4">
-                <Input
-                  label="Your Name"
-                  placeholder="Enter your name"
-                  value={contributorName}
-                  onChange={(e) => {
-                    setContributorName(e.target.value)
-                    if (error && error.includes('name')) setError(null)
-                  }}
-                  maxLength={50}
-                  required
-                />
-                <div>
-                  <label className="mb-2 block text-sm font-medium">
-                    Contribution Amount
-                  </label>
-                  <div className="grid gap-4">
-                    <div className="flex flex-wrap gap-2">
+          <div className="p-8">
+            <h2 className="text-xl font-bold text-white mb-6">Contribute to Gift</h2>
+            <div className="max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Input Fields */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-white mb-2 font-medium" htmlFor="name">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={contributorName}
+                      onChange={(e) => setContributorName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="w-full px-4 py-3 bg-[#1a1f4d]/30 text-white rounded-xl border border-white/10 focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder-white/40 transition-all duration-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white mb-2 font-medium">
+                      Contribution Amount
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                       {suggestedAmounts.map((suggestion) => (
                         <Button
                           key={suggestion.label}
-                          type="button"
-                          variant={selectedSuggestion === suggestion.label ? 'primary' : 'outline'}
-                          size="sm"
                           onClick={() => handleSuggestionSelect(suggestion)}
-                          className="flex-1"
+                          className={`w-full transition-all duration-200 ${
+                            selectedSuggestion === suggestion.label
+                              ? 'bg-blue-500 hover:bg-blue-600 text-white ring-2 ring-blue-500/20'
+                              : 'bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10'
+                          }`}
                         >
                           {suggestion.label}
-                          {suggestion.percentage && (
-                            <span className="ml-1 text-xs">
-                              (${suggestion.amount})
-                            </span>
+                          {suggestion.amount > 0 && (
+                            <span className="block text-sm opacity-80">${suggestion.amount}</span>
                           )}
                         </Button>
                       ))}
                     </div>
-                    <AnimatePresence mode="wait">
-                      {selectedSuggestion === 'custom' && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                        >
-                          <Input
-                            type="number"
-                            value={contributionAmount}
-                            onChange={(e) => {
-                              setContributionAmount(e.target.value)
-                              if (error) validateContribution(Number(e.target.value))
-                            }}
-                            placeholder={`Enter amount (min $${minContribution.toFixed(2)})`}
-                            min={minContribution}
-                            max={Math.min(10000, remainingAmount)}
-                            step="0.01"
-                            required
-                          />
-                        </motion.div>
+                    <input
+                      type="number"
+                      value={contributionAmount}
+                      onChange={(e) => {
+                        setContributionAmount(e.target.value)
+                        setSelectedSuggestion('custom')
+                        validateContribution(Number(e.target.value))
+                      }}
+                      placeholder="Enter amount"
+                      className="w-full px-4 py-3 bg-[#1a1f4d]/30 text-white rounded-xl border border-white/10 focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder-white/40 transition-all duration-200"
+                    />
+                    {error && (
+                      <p className="mt-2 text-red-500 flex items-center gap-2 bg-red-500/10 p-2 rounded-lg">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm">{error}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column - Summary */}
+                <div className="space-y-6">
+                  <div className="bg-[#1a1f4d]/30 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
+                    <h3 className="text-white font-medium mb-6 flex items-center gap-2">
+                      <DollarSign className="w-5 h-5" />
+                      Contribution Summary
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between text-white/60 items-center">
+                        <span>Your Name</span>
+                        <span className="font-medium text-white">{contributorName || '—'}</span>
+                      </div>
+                      <div className="flex justify-between text-white/60 items-center">
+                        <span>Amount</span>
+                        <span className="font-medium text-white">{contributionAmount ? `$${contributionAmount}` : '—'}</span>
+                      </div>
+                      <div className="flex justify-between text-white/60 items-center">
+                        <span>Processing Fee</span>
+                        <span className="font-medium text-white">$0.50</span>
+                      </div>
+                      <div className="h-px bg-white/10" />
+                      <div className="flex justify-between text-white items-center">
+                        <span className="font-medium">Total</span>
+                        <span className="text-lg font-medium">
+                          ${contributionAmount ? (Number(contributionAmount) + 0.50).toFixed(2) : '0.50'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button
+                      className="w-full sm:w-auto bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10 transition-all duration-200"
+                      onClick={() => setShowContributeForm(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="w-full sm:flex-1 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 disabled:opacity-50"
+                      onClick={handleContribute}
+                      disabled={isLoading || !contributorName || !contributionAmount}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        'Continue to Payment'
                       )}
-                    </AnimatePresence>
+                    </Button>
                   </div>
                 </div>
               </div>
-
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-lg bg-red-50 p-3"
-                >
-                  <div className="flex items-center gap-2 text-sm text-red-600">
-                    <AlertCircle className="h-4 w-4" />
-                    {error}
-                  </div>
-                </motion.div>
-              )}
-
-              <div className="rounded-lg bg-gray-50 p-4">
-                <h4 className="font-medium">Contribution Summary</h4>
-                <dl className="mt-3 space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <dt className="text-gray-600">Your Name:</dt>
-                    <dd className="font-medium">{contributorName || '—'}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-gray-600">Amount:</dt>
-                    <dd className="font-medium">
-                      {contributionAmount ? `$${Number(contributionAmount).toFixed(2)}` : '—'}
-                    </dd>
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between">
-                    <dt className="text-gray-600">Processing Fee:</dt>
-                    <dd className="font-medium">$0.50</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowContributeForm(false)
-                    setError(null)
-                    setContributorName('')
-                    setContributionAmount('')
-                    setSelectedSuggestion('custom')
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1"
-                  disabled={isLoading || !contributorName || !contributionAmount}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Continue to Payment'
-                  )}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </PageLayout>
   )
-} 
+}
+
+export default GiftPage; 
