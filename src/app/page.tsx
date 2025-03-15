@@ -194,7 +194,7 @@ export default function HomePage() {
                           className="border border-white/20 bg-transparent hover:bg-transparent text-white"
                         >
                           <LayoutDashboard className="w-4 h-4 mr-2" />
-                          {t('common.dashboard')}
+                          Dashboard
                         </Button>
                       </Link>
                     ) : (
@@ -205,7 +205,7 @@ export default function HomePage() {
                         className="border border-white/20 bg-transparent hover:bg-transparent text-white"
                       >
                         <LogIn className="w-4 h-4 mr-2" />
-                        {t('common.signIn')}
+                        Sign in
                       </Button>
                     )}
                   </div>

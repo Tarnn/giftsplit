@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface SparkleEffectProps {
   color?: string
@@ -58,6 +59,8 @@ export function SparkleEffect({ color = '#ffffff33', size = 2.5, count = 20 }: S
 }
 
 export default function Logo() {
+  const { t } = useTranslation()
+
   return (
     <motion.div
       className="flex items-center gap-2"

@@ -139,7 +139,7 @@ export default function CreateGiftPage() {
 
   return (
     <PageLayout>
-      <div className="max-w-2xl mx-auto pt-12 px-4">
+      <div className="max-w-4xl mx-auto pt-12 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

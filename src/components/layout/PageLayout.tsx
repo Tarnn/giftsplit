@@ -9,8 +9,6 @@ import Button from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
 import Logo from '@/components/ui/Logo'
 import { LanguageSelector } from '@/components/ui/LanguageSelector'
-import { useTranslation } from 'react-i18next'
-import '@/i18n'
 
 interface PageLayoutProps {
   children: React.ReactNode
@@ -64,7 +62,6 @@ const getNavItems = (hasGifts: boolean, userName: string = '') => {
 export function PageLayout({ children }: PageLayoutProps) {
   const { user, signIn, signOut } = useAuth()
   const pathname = usePathname()
-  const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // Close menu when route changes
@@ -117,7 +114,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                   onClick={signOut}
                   className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                 >
-                  {t('common.signOut')}
+                  Sign Out
                 </Button>
               ) : (
                 <Button
@@ -126,7 +123,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                   onClick={signIn}
                   className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                 >
-                  {t('common.signIn')}
+                  Sign In
                 </Button>
               )}
             </nav>
@@ -157,7 +154,7 @@ export function PageLayout({ children }: PageLayoutProps) {
               exit={{ opacity: 0, height: 0 }}
               className="[@media(min-width:980px)]:hidden border-t border-white/5 bg-[#070b2b] overflow-hidden"
             >
-              <div className="container mx-auto px-4 py-4">
+              <div className="container px-4 py-4">
                 <nav className="flex flex-col gap-2">
                   {user && navItems.map((item) => {
                     const Icon = item.icon
@@ -183,7 +180,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                       onClick={signOut}
                       className="mt-2 w-full bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                     >
-                      {t('common.signOut')}
+                      Sign Out
                     </Button>
                   ) : (
                     <Button
@@ -192,7 +189,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                       onClick={signIn}
                       className="mt-2 w-full bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                     >
-                      {t('common.signIn')}
+                      Sign In
                     </Button>
                   )}
                 </nav>

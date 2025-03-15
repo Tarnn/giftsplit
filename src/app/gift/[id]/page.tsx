@@ -20,6 +20,7 @@ import { useParams } from 'next/navigation'
 import { theme, components } from '@/styles/theme'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { NextPage } from 'next'
+import { ShareModal } from '@/components/ui/ShareModal'
 
 interface ContributionReceipt {
   url: string
@@ -102,7 +103,7 @@ const GiftPage: NextPage = () => {
   const [giftData, setGiftData] = useState<GiftData>(mockGiftData)
   const [selectedSuggestion, setSelectedSuggestion] = useState<string>('custom')
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   
   const totalPaid = giftData.contributors.reduce((sum, contributor) => 
     contributor.status === 'paid' ? sum + contributor.amount : sum, 0
@@ -135,14 +136,8 @@ const GiftPage: NextPage = () => {
     }
   ].filter(suggestion => suggestion.amount >= minContribution)
 
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
+  const handleShare = () => {
+    setIsShareModalOpen(true)
   }
 
   const validateContribution = (amount: number): boolean => {
@@ -301,6 +296,14 @@ const GiftPage: NextPage = () => {
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto pt-12 px-4 pb-12">
+        {/* Share Modal */}
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          url={typeof window !== 'undefined' ? window.location.href : ''}
+          title={`Contribute to: ${giftData.description}`}
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -315,7 +318,7 @@ const GiftPage: NextPage = () => {
               onClick={handleShare}
               className="w-full sm:w-auto bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
             >
-              {copied ? 'Copied!' : 'Share'}
+              Share
               <Share2 className="w-4 h-4 ml-2" />
             </Button>
           </div>
@@ -367,10 +370,10 @@ const GiftPage: NextPage = () => {
 
           <div className="p-8">
             <h2 className="text-xl font-bold text-white mb-6">Contribute to Gift</h2>
-            <div className="max-w-5xl mx-auto">
+            <div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column - Input Fields */}
-                <div className="space-y-6">
+                <div>
                   <div>
                     <label className="block text-white mb-2 font-medium" htmlFor="name">
                       Your Name
@@ -385,11 +388,22 @@ const GiftPage: NextPage = () => {
                     />
                   </div>
 
-                  <div>
+                  <div className="mt-6">
+                    <label className="block text-white mb-2 font-medium">
+                      Message (Optional)
+                    </label>
+                    <textarea
+                      placeholder="Add a short message..."
+                      className="w-full px-4 py-3 bg-[#1a1f4d]/30 text-white rounded-xl border border-white/10 focus:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder-white/40 transition-all duration-200 min-h-[100px] resize-none"
+                    />
+                    <p className="text-white/40 text-sm mt-1">200 characters remaining</p>
+                  </div>
+
+                  <div className="mt-6">
                     <label className="block text-white mb-2 font-medium">
                       Contribution Amount
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                    <div className="grid grid-cols-3 gap-3 mb-4">
                       {suggestedAmounts.map((suggestion) => (
                         <Button
                           key={suggestion.label}
@@ -428,7 +442,7 @@ const GiftPage: NextPage = () => {
                 </div>
 
                 {/* Right Column - Summary */}
-                <div className="space-y-6">
+                <div>
                   <div className="bg-[#1a1f4d]/30 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
                     <h3 className="text-white font-medium mb-6 flex items-center gap-2">
                       <DollarSign className="w-5 h-5" />
@@ -457,7 +471,7 @@ const GiftPage: NextPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4 mt-6">
                     <Button
                       className="w-full sm:w-auto bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10 transition-all duration-200"
                       onClick={() => setShowContributeForm(false)}

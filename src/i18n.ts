@@ -36,7 +36,23 @@ const resources = {
       secure: 'Secure',
       collectViaStripe: 'Collect funds directly via Stripe',
       trackProgress: 'Track Progress',
-      monitorRealTime: 'Monitor contributions in real-time'
+      monitorRealTime: 'Monitor contributions in real-time',
+      giftDescriptionRequired: 'Gift description is required',
+      descriptionTooLong: 'Description must be 50 characters or less',
+      amountRequired: 'Amount is required',
+      invalidAmount: 'Please enter a valid amount',
+      maxAmount: 'Maximum amount is $10,000',
+      giftDescription: 'Gift Description',
+      giftDescriptionPlaceholder: 'e.g., Watch for Dad',
+      yourEmail: 'Your Email',
+      emailDescription: 'Enter your email to track your gift and receive updates',
+      step: 'Step {{step}} of {{total}}',
+      complete: 'Complete',
+      characters: 'characters',
+      success: 'Success!',
+      error: 'Error',
+      giftCreatedSuccess: 'Your gift has been created successfully.',
+      giftCreationError: 'Failed to create gift. Please try again.'
     }
   },
   es: {
