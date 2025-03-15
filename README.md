@@ -1,4 +1,14 @@
+# GiftSplit
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+Deployed on vercel: https://giftsplit.vercel.app/
+
+## Demo
+
+Check out GiftSplit in action, there's still some bugs -- this was just a prototype!:
+
+https://github.com/Tarnnn/giftsplit/blob/main/frontend/giftsplit-demo.mp4
 
 ## Getting Started
 

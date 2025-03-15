@@ -1,33 +1,29 @@
 import { NextResponse } from 'next/server'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
 import { Gift } from '@/types/gift'
 
-// Comment out Stripe for now
-// import Stripe from 'stripe'
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-//   apiVersion: '2025-02-24.acacia',
-// })
-
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-  },
-})
-
-const docClient = DynamoDBDocumentClient.from(client)
+// Mock gifts data store
+const mockGifts: Record<string, Gift> = {
+  // Add a sample gift for testing
+  'test-gift-id': {
+    id: 'test-gift-id',
+    description: 'Test Gift',
+    amount: 100,
+    splitType: 'even',
+    numberOfPeople: 3,
+    paidAmounts: [0, 0, 0],
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    organizerEmail: 'test@example.com'
+  }
+}
 
 export async function POST(request: Request) {
   try {
     const { giftId, shareIndex } = await request.json()
 
-    // Get gift from DynamoDB
-    const { Item: gift } = await docClient.send(new GetCommand({
-      TableName: process.env.DYNAMODB_TABLE || 'gifts',
-      Key: { id: giftId },
-    }))
+    // Get gift from mock data
+    const gift = mockGifts[giftId]
 
     if (!gift) {
       return NextResponse.json(
@@ -35,13 +31,11 @@ export async function POST(request: Request) {
         { status: 404 }
       )
     }
-
-    const typedGift = gift as Gift
     
     // Calculate share amount (keep this for future reference)
-    const shareAmount = typedGift.splitType === 'custom' && typedGift.customSplits
-      ? typedGift.customSplits[shareIndex]
-      : typedGift.amount / typedGift.numberOfPeople
+    const shareAmount = gift.splitType === 'custom' && gift.customSplits
+      ? gift.customSplits[shareIndex]
+      : gift.amount / gift.numberOfPeople
 
     // Mock Stripe session creation
     const mockSession = {
