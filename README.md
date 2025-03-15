@@ -8,7 +8,7 @@ Deployed on vercel: https://giftsplit.vercel.app/
 
 Check out GiftSplit in action, there's still some bugs -- this was just a prototype!:
 
-https://github.com/Tarnnn/giftsplit/blob/main/frontend/giftsplit-demo.mp4
+https://github.com/Tarnn/giftsplit/blob/master/giftsplit-demo.mp4
 
 ## Getting Started
 
