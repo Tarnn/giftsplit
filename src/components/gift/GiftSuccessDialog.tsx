@@ -156,23 +156,31 @@ export default function GiftSuccessDialog({
 
           <div className="mt-4">
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-lg border bg-white p-2 text-sm">
+              <div className="mt-2 p-3 bg-gray-900/50 rounded-lg text-sm font-mono break-all">
                 {giftLink}
               </div>
-              <Button onClick={handleCopyLink} variant="secondary" size="sm">
+              <Button onClick={handleCopyLink} variant="outline" size="sm">
                 {copied ? (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="flex items-center gap-2"
                   >
-                    <Check className="h-4 w-4 text-green-600" />
+                    <Check className="h-4 w-4" />
+                    <span>Copied!</span>
                   </motion.div>
                 ) : (
-                  <Copy className="h-4 w-4" />
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    <span>Copy Link</span>
+                  </motion.div>
                 )}
               </Button>
-              <Button onClick={handleNativeShare} variant="secondary" size="sm">
+              <Button onClick={handleNativeShare} variant="outline" size="sm">
                 <Share2 className="h-4 w-4" />
               </Button>
             </div>
@@ -245,9 +253,15 @@ export default function GiftSuccessDialog({
             )}
           </AnimatePresence>
 
-          <div className="mt-4 flex justify-end gap-2">
-            <Button onClick={onClose}>
-              Create Another Gift
+          <div className="mt-4 flex justify-end gap-3">
+            <Button variant="outline" size="sm" onClick={onClose}>
+              Close
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => {
+              onClose()
+              // Add logic to create another gift
+            }}>
+              Create Another
             </Button>
           </div>
         </motion.div>

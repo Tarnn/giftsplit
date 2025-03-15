@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
 
 interface SparkleEffectProps {
   color?: string
@@ -10,72 +9,50 @@ interface SparkleEffectProps {
   count?: number
 }
 
-function SparkleEffectComponent({ 
-  color = "#FFF", 
-  size = 4, 
-  count = 3 
-}: SparkleEffectProps) {
-  const [mounted, setMounted] = useState(false)
-  const [sparkles, setSparkles] = useState<Array<{
-    id: number,
-    style: {
-      width: number,
-      height: number,
-      left: string,
-      top: string,
-      duration: number
-    }
-  }>>([])
+export default function SparkleEffect({ color = '#ffffff33', size = 2.5, count = 20 }: SparkleEffectProps) {
+  const [sparkles, setSparkles] = useState<Array<{ id: number, x: number, y: number, scale: number }>>([])
 
   useEffect(() => {
-    setMounted(true)
+    // Generate sparkles only on client side
     const newSparkles = Array.from({ length: count }, (_, i) => ({
       id: i,
-      style: {
-        width: Math.random() * size + 2,
-        height: Math.random() * size + 2,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        duration: Math.random() * 1 + 0.5
-      }
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      scale: 0.8 + Math.random() * 0.4
     }))
     setSparkles(newSparkles)
-  }, [count, size])
+  }, [count])
 
-  if (!mounted) return null
+  if (sparkles.length === 0) {
+    return null // Return null on server-side to prevent hydration mismatch
+  }
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {sparkles.map(sparkle => (
+    <motion.div className="absolute inset-0">
+      {sparkles.map(({ id, x, y, scale }) => (
         <motion.div
-          key={sparkle.id}
-          className="absolute"
+          key={id}
           style={{
-            width: sparkle.style.width,
-            height: sparkle.style.height,
+            position: 'absolute',
+            width: `${size * scale}px`,
+            height: `${size * scale}px`,
             backgroundColor: color,
             borderRadius: '50%',
-            left: sparkle.style.left,
-            top: sparkle.style.top,
+            left: `${x}%`,
+            top: `${y}%`,
           }}
-          initial={{ scale: 0, opacity: 0 }}
+          initial={{ opacity: 0.2 }}
           animate={{
-            scale: [0, 1, 0],
-            opacity: [0, 1, 0],
+            opacity: [0.2, 0.5, 0.2],
+            scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: sparkle.style.duration,
+            duration: 3,
             repeat: Infinity,
-            repeatDelay: Math.random() * 0.5,
-            ease: "easeInOut"
+            delay: Math.random() * 3,
           }}
         />
       ))}
-    </div>
+    </motion.div>
   )
-}
-
-// Export a non-SSR version of the component
-export default dynamic(() => Promise.resolve(SparkleEffectComponent), {
-  ssr: false
-}) 
+} 

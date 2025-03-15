@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import Logo from '@/components/ui/Logo'
+import { Logo } from '@/components/ui/Logo'
 import Button from '@/components/ui/Button'
 import { MoneyIcon } from '@/components/ui/MoneyIcon'
 import { useAuth } from '@/context/AuthContext'

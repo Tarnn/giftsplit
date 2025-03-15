@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X, LogIn, Home, User, LayoutDashboard, Gift, LucideIcon } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
-import Logo from '@/components/ui/Logo'
+import { Logo } from '@/components/ui/Logo'
 import { LanguageSelector } from '@/components/ui/LanguageSelector'
 
 interface PageLayoutProps {
@@ -87,7 +87,7 @@ export function PageLayout({ children }: PageLayoutProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden [@media(min-width:980px)]:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-6">
               {user && navItems.map((item) => {
                 const Icon = item.icon
                 return (

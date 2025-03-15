@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 import { Gift, Shield, LineChart, User, DollarSign, Sparkles, LayoutDashboard, LogIn } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
-import Logo from '@/components/ui/Logo'
+import { Logo } from '@/components/ui/Logo'
 import { useAuth } from '@/context/AuthContext'
 import SparkleEffect from '@/components/ui/SparkleEffect'
-import { Layout } from '@/components/layout/Layout'
+import { PageLayout } from '@/components/layout/PageLayout'
 import { LanguageSelector } from '@/components/ui/LanguageSelector'
 import { useTranslation } from 'react-i18next'
 import '@/i18n'
@@ -160,7 +160,7 @@ export default function HomePage() {
   }
 
   return (
-    <Layout>
+    <PageLayout>
       <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] via-[#121a4a] to-[#1a1248]">
         {/* Background Sparkles */}
         <div className="fixed inset-0 pointer-events-none opacity-40">
@@ -335,6 +335,6 @@ export default function HomePage() {
           }}
         />
       </div>
-    </Layout>
+    </PageLayout>
   )
 }
