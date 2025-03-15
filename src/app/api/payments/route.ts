@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
 import { Gift } from '@/types/gift'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia',
-})
+// Comment out Stripe for now
+// import Stripe from 'stripe'
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+//   apiVersion: '2025-02-24.acacia',
+// })
 
 const client = new DynamoDBClient({
   region: process.env.AWS_REGION || 'us-east-1',
@@ -37,48 +38,32 @@ export async function POST(request: Request) {
 
     const typedGift = gift as Gift
     
-    // Calculate share amount
+    // Calculate share amount (keep this for future reference)
     const shareAmount = typedGift.splitType === 'custom' && typedGift.customSplits
       ? typedGift.customSplits[shareIndex]
       : typedGift.amount / typedGift.numberOfPeople
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Gift Share: ${typedGift.description}`,
-              description: `Share ${shareIndex + 1} of ${typedGift.numberOfPeople}`,
-            },
-            unit_amount: Math.round(shareAmount * 100), // Convert to cents
-          },
-          quantity: 1,
-        },
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Platform Fee',
-              description: 'One-time fee for gift splitting service',
-            },
-            unit_amount: 100, // $1 in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/gift/${giftId}?success=true&share=${shareIndex}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/gift/${giftId}?canceled=true`,
+    // Mock Stripe session creation
+    const mockSession = {
+      id: `mock_session_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      amount: shareAmount,
       metadata: {
         giftId,
         shareIndex: shareIndex.toString(),
-      },
-    })
+      }
+    }
 
-    return NextResponse.json({ sessionId: session.id })
+    // Return mock session ID
+    return NextResponse.json({ 
+      sessionId: mockSession.id,
+      // Include additional mock data that might be useful for testing
+      mockData: {
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/gift/${giftId}?success=true&share=${shareIndex}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/gift/${giftId}?canceled=true`,
+        amount: shareAmount,
+        platformFee: 1.00, // $1 platform fee
+      }
+    })
   } catch (error) {
     console.error('Payment error:', error)
     return NextResponse.json(
