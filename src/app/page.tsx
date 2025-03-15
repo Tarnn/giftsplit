@@ -160,7 +160,7 @@ export default function HomePage() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout simpleHeader>
       <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] via-[#121a4a] to-[#1a1248]">
         {/* Background Sparkles */}
         <div className="fixed inset-0 pointer-events-none opacity-40">
@@ -169,51 +169,6 @@ export default function HomePage() {
 
         {/* Hero Section */}
         <div className="relative overflow-hidden">
-          {/* Navigation */}
-          <motion.header 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-0 left-0 right-0 z-50"
-          >
-            <div className="relative backdrop-blur-xl bg-black/20">
-              <div className="container mx-auto px-4">
-                <div className="flex h-20 items-center justify-between">
-                  {/* Left: Logo */}
-                  <Link href="/" className="flex items-center gap-2">
-                    <Logo />
-                  </Link>
-
-                  {/* Right: Nav Links & Auth */}
-                  <div className="flex items-center gap-6">
-                    <LanguageSelector />
-                    {user ? (
-                      <Link href="/dashboard">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border border-white/20 bg-transparent hover:bg-transparent text-white"
-                        >
-                          <LayoutDashboard className="w-4 h-4 mr-2" />
-                          Dashboard
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={signIn}
-                        className="border border-white/20 bg-transparent hover:bg-transparent text-white"
-                      >
-                        <LogIn className="w-4 h-4 mr-2" />
-                        Sign in
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.header>
-
           <main className="flex min-h-screen flex-col items-center justify-center px-4 sm:px-6">
             <motion.div 
               className="w-full max-w-6xl mx-auto text-center space-y-8 sm:space-y-16 relative pt-16 sm:pt-0"

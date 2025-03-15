@@ -12,6 +12,7 @@ import { LanguageSelector } from '@/components/ui/LanguageSelector'
 
 interface PageLayoutProps {
   children: React.ReactNode
+  simpleHeader?: boolean
 }
 
 interface NavItem {
@@ -59,7 +60,7 @@ const getNavItems = (hasGifts: boolean, userName: string = '') => {
   return baseItems
 }
 
-export function PageLayout({ children }: PageLayoutProps) {
+export function PageLayout({ children, simpleHeader = false }: PageLayoutProps) {
   const { user, signIn, signOut } = useAuth()
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -88,7 +89,7 @@ export function PageLayout({ children }: PageLayoutProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              {user && navItems.map((item) => {
+              {!simpleHeader && user && navItems.map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
@@ -108,14 +109,28 @@ export function PageLayout({ children }: PageLayoutProps) {
               <div className="h-6 w-px bg-white/10" />
               <LanguageSelector />
               {user ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={signOut}
-                  className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
-                >
-                  Sign Out
-                </Button>
+                simpleHeader ? (
+                  <Link href="/dashboard">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={signOut}
+                    className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                )
               ) : (
                 <Button
                   variant="outline"
@@ -123,6 +138,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                   onClick={signIn}
                   className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
                 >
+                  <LogIn className="w-4 h-4 mr-2" />
                   Sign In
                 </Button>
               )}
@@ -131,23 +147,59 @@ export function PageLayout({ children }: PageLayoutProps) {
             {/* Mobile Navigation Toggle */}
             <div className="flex items-center gap-4 [@media(min-width:980px)]:hidden">
               <LanguageSelector />
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-white/70 hover:text-white rounded-lg hover:bg-white/5"
-              >
-                {isMenuOpen ? (
-                  <X className="h-6 w-6" />
+              {!simpleHeader && (
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="p-2 text-white/70 hover:text-white rounded-lg hover:bg-white/5"
+                >
+                  {isMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
+                </button>
+              )}
+              {user ? (
+                simpleHeader ? (
+                  <Link href="/dashboard">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
                 ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={signOut}
+                    className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                )
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={signIn}
+                  className="bg-[#1a1f4d]/30 text-white hover:bg-[#1a1f4d]/50 border border-white/10"
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
 
         {/* Mobile Menu */}
         <AnimatePresence>
-          {isMenuOpen && (
+          {!simpleHeader && isMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -200,7 +252,7 @@ export function PageLayout({ children }: PageLayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="pt-20">
+      <main className={!simpleHeader ? "pt-20" : ""}>
         {children}
       </main>
     </div>
